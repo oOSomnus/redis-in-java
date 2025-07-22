@@ -17,20 +17,11 @@ public class Main {
             // Since the tester restarts your program quite often, setting SO_REUSEADDR
             // ensures that we don't run into 'Address already in use' errors
             serverSocket.setReuseAddress(true);
-            // Wait for connection from client.
-            clientSocket = serverSocket.accept();
-            InputStream inputStream = clientSocket.getInputStream();
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            OutputStream outputStream = clientSocket.getOutputStream();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                System.out.println(line);
-                if ("PING".equals(line)) {
-                    outputStream.write("+PONG\r\n".getBytes(StandardCharsets.UTF_8));
-                    outputStream.flush();
-                } else {
-                    continue;
-                }
+            while (true) {
+                // Wait for connection from client.
+                clientSocket = serverSocket.accept();
+                System.out.println("New client connected!");
+                new Thread(new ClientHandler(clientSocket));
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
@@ -41,6 +32,42 @@ public class Main {
                 }
             } catch (IOException e) {
                 System.out.println("IOException: " + e.getMessage());
+            }
+        }
+    }
+
+    static class ClientHandler implements Runnable {
+        private Socket clientSocket;
+
+        ClientHandler(Socket clientSocket) {
+            this.clientSocket = clientSocket;
+        }
+
+        @Override
+        public void run() {
+            try (
+                    InputStream inputStream = this.clientSocket.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                    OutputStream outputStream = this.clientSocket.getOutputStream();
+            ) {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    System.out.println(line);
+                    if ("PING".equals(line)) {
+                        outputStream.write("+PONG\r\n".getBytes(StandardCharsets.UTF_8));
+                        outputStream.flush();
+                    } else {
+                        continue;
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println("IOException: " + e.getMessage());
+            } finally {
+                try {
+                    clientSocket.close();
+                } catch (IOException e) {
+                    System.out.println("IOException: " + e.getMessage());
+                }
             }
         }
     }
