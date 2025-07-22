@@ -1,7 +1,13 @@
+import handlers.EchoHandler;
+import handlers.PingHandler;
+import handlers.RedisHandler;
+import utils.BufferReaderUtil;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -50,15 +56,22 @@ public class Main {
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                     OutputStream outputStream = this.clientSocket.getOutputStream();
             ) {
+                List<String> inputList = null;
+                RedisHandler handler = null;
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
-                    System.out.println(line);
                     if ("PING".equals(line)) {
-                        outputStream.write("+PONG\r\n".getBytes(StandardCharsets.UTF_8));
-                        outputStream.flush();
+                        handler = new PingHandler();
+                        inputList = BufferReaderUtil.readNextKLines(bufferedReader, 0);
+                    } else if ("echo".equalsIgnoreCase(line)) {
+                        handler = new EchoHandler();
+                        inputList = BufferReaderUtil.readNextKLines(bufferedReader, 1);
                     } else {
                         continue;
                     }
+                    String output = handler.handle(inputList);
+                    outputStream.write(output.getBytes(StandardCharsets.UTF_8));
+                    outputStream.flush();
                 }
             } catch (IOException e) {
                 System.out.println("IOException: " + e.getMessage());
