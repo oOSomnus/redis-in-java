@@ -1,7 +1,7 @@
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class Main {
     public static void main(String[] args) {
@@ -19,8 +19,19 @@ public class Main {
             serverSocket.setReuseAddress(true);
             // Wait for connection from client.
             clientSocket = serverSocket.accept();
+            InputStream inputStream = clientSocket.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             OutputStream outputStream = clientSocket.getOutputStream();
-            outputStream.write("+PONG\r\n".getBytes());
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
+                if ("PING".equals(line)) {
+                    outputStream.write("+PONG\r\n".getBytes(StandardCharsets.UTF_8));
+                    outputStream.flush();
+                } else {
+                    continue;
+                }
+            }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
         } finally {
