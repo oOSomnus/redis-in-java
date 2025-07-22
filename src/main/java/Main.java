@@ -21,7 +21,7 @@ public class Main {
                 // Wait for connection from client.
                 clientSocket = serverSocket.accept();
                 System.out.println("New client connected!");
-                new Thread(new ClientHandler(clientSocket));
+                new Thread(new ClientHandler(clientSocket)).start();
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
@@ -37,7 +37,7 @@ public class Main {
     }
 
     static class ClientHandler implements Runnable {
-        private Socket clientSocket;
+        private final Socket clientSocket;
 
         ClientHandler(Socket clientSocket) {
             this.clientSocket = clientSocket;
