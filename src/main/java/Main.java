@@ -1,6 +1,4 @@
-import handlers.EchoHandler;
-import handlers.PingHandler;
-import handlers.RedisHandler;
+import handlers.*;
 import utils.BufferReaderUtil;
 
 import java.io.*;
@@ -66,6 +64,12 @@ public class Main {
                     } else if ("echo".equalsIgnoreCase(line)) {
                         handler = new EchoHandler();
                         inputList = BufferReaderUtil.readNextKLines(bufferedReader, 1);
+                    } else if ("get".equalsIgnoreCase(line)) {
+                        handler = new GetHandler();
+                        inputList = BufferReaderUtil.readNextKLines(bufferedReader, 1);
+                    } else if ("set".equalsIgnoreCase(line)) {
+                        handler = new SetHandler();
+                        inputList = BufferReaderUtil.readNextKLines(bufferedReader, 2);
                     } else {
                         continue;
                     }
