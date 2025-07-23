@@ -34,7 +34,7 @@ public class StorageValue {
             this.listVal.add(element);
         }else{
             this.storageValueType = StorageValueType.LIST;
-            this.listVal = new ArrayList<String>();
+            this.listVal = new ArrayList<>();
             this.listVal.add(element);
         }
         return this.listVal.size();
