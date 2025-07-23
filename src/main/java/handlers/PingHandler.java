@@ -6,7 +6,7 @@ import java.util.List;
 
 public class PingHandler implements RedisHandler {
     @Override
-    public String handle(List<String> command) {
+    public String handle(List<String> arguments) {
         return StringUtils.toSimpleString("PONG");
     }
 }

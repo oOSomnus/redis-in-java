@@ -1,4 +1,6 @@
+import dispatcher.CommandDispatcher;
 import handlers.*;
+import parsers.BatchReader;
 import utils.BufferReaderUtil;
 
 import java.io.*;
@@ -51,30 +53,16 @@ public class Main {
         public void run() {
             try (
                     InputStream inputStream = this.clientSocket.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                     OutputStream outputStream = this.clientSocket.getOutputStream();
             ) {
-                List<String> inputList = null;
-                RedisHandler handler = null;
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    if ("PING".equals(line)) {
-                        handler = new PingHandler();
-                        inputList = BufferReaderUtil.readNextKLines(bufferedReader, 0);
-                    } else if ("echo".equalsIgnoreCase(line)) {
-                        handler = new EchoHandler();
-                        inputList = BufferReaderUtil.readNextKLines(bufferedReader, 1);
-                    } else if ("get".equalsIgnoreCase(line)) {
-                        handler = new GetHandler();
-                        inputList = BufferReaderUtil.readNextKLines(bufferedReader, 1);
-                    } else if ("set".equalsIgnoreCase(line)) {
-                        handler = new SetHandler();
-                        inputList = BufferReaderUtil.readNextKLines(bufferedReader, 2);
-                    } else {
+                BatchReader batchReader = new BatchReader(inputStream);
+                List<String> commandList;
+                while ((commandList = batchReader.readBatch()) != null) {
+                    String retVal = CommandDispatcher.dispatch(commandList);
+                    if(retVal == null){
                         continue;
                     }
-                    String output = handler.handle(inputList);
-                    outputStream.write(output.getBytes(StandardCharsets.UTF_8));
+                    outputStream.write(retVal.getBytes(StandardCharsets.UTF_8));
                     outputStream.flush();
                 }
             } catch (IOException e) {
