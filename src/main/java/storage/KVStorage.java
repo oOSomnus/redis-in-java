@@ -24,17 +24,17 @@ public class KVStorage {
      * @param key
      * @return value
      */
-    public String get(String key) {
+    public StorageValue get(String key) {
         System.out.println("getting key: " + key);
         StorageValue storageValue = kvStore.get(key);
         if(storageValue == null){
             return null;
         }
-        if(storageValue.exp != null && storageValue.exp.isBefore(Instant.now())){
-            System.out.println("expired! InstantNow: " + Instant.now().toString() + "Exp: " + storageValue.exp.toString());
+        if(storageValue.getExpiry() != null && storageValue.getExpiry().isBefore(Instant.now())){
+            System.out.println("expired! InstantNow: " + Instant.now().toString() + "Exp: " + storageValue.getExpiry().toString());
             return null;
         }
-        return storageValue.value;
+        return storageValue;
 
     }
 }

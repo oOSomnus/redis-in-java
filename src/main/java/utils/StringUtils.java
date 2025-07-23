@@ -12,4 +12,8 @@ public class StringUtils {
         }
         return "$" + input.length() + "\r\n" + input + "\r\n";
     }
+
+    public static String toRESPInteger(Integer input) {
+        return ":"+input.toString()+"\r\n";
+    }
 }
