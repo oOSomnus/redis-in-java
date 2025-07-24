@@ -11,21 +11,21 @@ import java.util.List;
 public class RPushHandler implements RedisHandler {
     @Override
     public String handle(List<String> arguments) {
-        String k = arguments.get(0);
-        String v = arguments.get(1);
+        String k = arguments.getFirst();
+        List<String> listElements = arguments.subList(1, arguments.size());
         KVStorage storage = KVStorage.getInstance();
-        StorageValue sv = storage.get(k);
-        if(sv != null && sv.getStorageValueType() != StorageValueType.LIST){
+        StorageValue currSv = storage.get(k);
+        if(currSv != null && currSv.getStorageValueType() != StorageValueType.LIST){
             System.out.println("Type is not a list");
             return null;
         }
-        if(sv == null){
+        if(currSv == null){
             StorageValue finalSv = new StorageValue();
-            Integer size = finalSv.setList(v);
+            Integer size = finalSv.setMultipleELementList(listElements);
             storage.set(k, finalSv);
             return StringUtils.toRESPInteger(size);
         }
-            Integer size = sv.setList(v);
+            Integer size = currSv.setMultipleELementList(listElements);
             return StringUtils.toRESPInteger(size);
     }
 }

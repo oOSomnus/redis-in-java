@@ -29,13 +29,24 @@ public class StorageValue {
         return exp;
     }
 
-    public Integer setList(String element){
+    public Integer setSingleElementList(String element){
         if(this.storageValueType == StorageValueType.LIST && this.listVal != null){
             this.listVal.add(element);
         }else{
             this.storageValueType = StorageValueType.LIST;
             this.listVal = new ArrayList<>();
             this.listVal.add(element);
+        }
+        return this.listVal.size();
+    }
+
+    public Integer setMultipleELementList(List<String> elements){
+        if(this.storageValueType == StorageValueType.LIST && this.listVal != null){
+            this.listVal.addAll(elements);
+        }else{
+            this.storageValueType = StorageValueType.LIST;
+            this.listVal = new ArrayList<>();
+            this.listVal.addAll(elements);
         }
         return this.listVal.size();
     }
