@@ -1,5 +1,6 @@
 package dispatcher;
 
+import dispatcher.Registry.HandlerRegistry;
 import handlers.*;
 import handlers.listHandlers.*;
 
@@ -8,20 +9,29 @@ import java.util.List;
 import java.util.Map;
 
 public class CommandDispatcher {
-    private static final Map<String, RedisHandler> handlerMapping;
+    private static final Map<String, RedisHandler> HANDLER_MAPPING;
 
     static{
         Map<String, RedisHandler> initMapping = new HashMap<>();
-        initMapping.put("echo", new EchoHandler());
-        initMapping.put("get", new GetHandler());
-        initMapping.put("set", new SetHandler());
-        initMapping.put("ping", new PingHandler());
-        initMapping.put("rpush", new RPushHandler());
-        initMapping.put("lrange", new LRangeHandler());
-        initMapping.put("lpush", new LPushHandler());
-        initMapping.put("llen", new LLenHandler());
-        initMapping.put("lpop", new LPopHandler());
-        handlerMapping = initMapping;
+//        initMapping.put("echo", new EchoHandler());
+//        initMapping.put("get", new GetHandler());
+//        initMapping.put("set", new SetHandler());
+//        initMapping.put("ping", new PingHandler());
+//        initMapping.put("rpush", new RPushHandler());
+//        initMapping.put("lrange", new LRangeHandler());
+//        initMapping.put("lpush", new LPushHandler());
+//        initMapping.put("llen", new LLenHandler());
+//        initMapping.put("lpop", new LPopHandler());
+        HandlerRegistry reg = new HandlerRegistry();
+        reg.scanAndRegister("handlers");
+        Map<String,Object> objectMap = reg.getHandlerMap();
+        System.out.println("objectMap:"+objectMap);
+        for(Map.Entry<String,Object> entry : objectMap.entrySet()){
+            String key = entry.getKey();
+            RedisHandler value = (RedisHandler)entry.getValue();
+            initMapping.put(key,value);
+        }
+        HANDLER_MAPPING = initMapping;
     }
 
     public static String dispatch(List<String> commandList){
@@ -29,8 +39,8 @@ public class CommandDispatcher {
             return null;
         }
         String command = commandList.getFirst().toLowerCase();
-        if(handlerMapping.containsKey(command)) {
-            return handlerMapping.get(command).handle(commandList.subList(1, commandList.size()));
+        if(HANDLER_MAPPING.containsKey(command)) {
+            return HANDLER_MAPPING.get(command).handle(commandList.subList(1, commandList.size()));
         }else{
             System.out.println("Unknown command: " + command);
             return null;

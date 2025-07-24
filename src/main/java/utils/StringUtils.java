@@ -2,6 +2,9 @@ package utils;
 
 import java.util.List;
 
+/**
+ * @author yihangz
+ */
 public class StringUtils {
     public static String toSimpleString(String input) {
         return "+" + input + "\r\n";

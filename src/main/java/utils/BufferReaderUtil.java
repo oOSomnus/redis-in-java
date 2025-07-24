@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author yihangz
+ */
 public class BufferReaderUtil {
     public static List<String> readNextKLines(BufferedReader bufferedReader, Integer k) throws IOException {
         List<String> output = new ArrayList<>();

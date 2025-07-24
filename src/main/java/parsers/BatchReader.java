@@ -9,6 +9,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author yihangz
+ */
 public class BatchReader {
     private BufferedReader bufferedReader;
     public BatchReader(InputStream inputStream) {

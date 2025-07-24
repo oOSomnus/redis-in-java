@@ -1,5 +1,6 @@
 package handlers;
 
+import dispatcher.Registry.HandlerName;
 import storage.KVStorage;
 import storage.StorageValue;
 import utils.StringUtils;
@@ -8,6 +9,10 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+/**
+ * @author yihangz
+ */
+@HandlerName("set")
 public class SetHandler implements RedisHandler {
     @Override
     public String handle(List<String> arguments) {

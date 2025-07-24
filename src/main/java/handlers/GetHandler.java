@@ -1,11 +1,16 @@
 package handlers;
 
+import dispatcher.Registry.HandlerName;
 import storage.KVStorage;
 import storage.StorageValue;
 import utils.StringUtils;
 
 import java.util.List;
 
+/**
+ * @author yihangz
+ */
+@HandlerName("get")
 public class GetHandler implements RedisHandler {
     @Override
     public String handle(List<String> arguments) {

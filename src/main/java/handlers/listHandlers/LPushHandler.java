@@ -1,5 +1,6 @@
 package handlers.listHandlers;
 
+import dispatcher.Registry.HandlerName;
 import handlers.RedisHandler;
 import storage.KVStorage;
 import storage.StorageValue;
@@ -7,7 +8,10 @@ import storage.StorageValueType;
 import utils.StringUtils;
 
 import java.util.List;
-
+/**
+ * @author yihangz
+ */
+@HandlerName("lpush")
 public class LPushHandler implements RedisHandler {
     @Override
     public String handle(List<String> arguments) {

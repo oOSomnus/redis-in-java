@@ -4,6 +4,9 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author yihangz
+ */
 public class KVStorage {
     private static final KVStorage instance = new KVStorage();
     private Map<String, StorageValue> kvStore = new HashMap<>();

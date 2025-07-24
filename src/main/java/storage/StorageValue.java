@@ -4,6 +4,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author yihangz
+ */
 public class StorageValue {
     private String stringVal;
     private List<String> listVal;

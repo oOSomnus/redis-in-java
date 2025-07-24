@@ -1,5 +1,6 @@
 package handlers.listHandlers;
 
+import dispatcher.Registry.HandlerName;
 import handlers.RedisHandler;
 import storage.KVStorage;
 import storage.StorageValue;
@@ -8,7 +9,10 @@ import utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * @author yihangz
+ */
+@HandlerName("lrange")
 public class LRangeHandler implements RedisHandler {
     @Override
     public String handle(List<String> arguments) {
