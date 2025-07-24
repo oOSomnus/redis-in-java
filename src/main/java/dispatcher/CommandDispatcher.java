@@ -1,10 +1,7 @@
 package dispatcher;
 
 import handlers.*;
-import handlers.listHandlers.LLenHandler;
-import handlers.listHandlers.LPushHandler;
-import handlers.listHandlers.LRangeHandler;
-import handlers.listHandlers.RPushHandler;
+import handlers.listHandlers.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +20,7 @@ public class CommandDispatcher {
         initMapping.put("lrange", new LRangeHandler());
         initMapping.put("lpush", new LPushHandler());
         initMapping.put("llen", new LLenHandler());
+        initMapping.put("lpop", new LPopHandler());
         handlerMapping = initMapping;
     }
 

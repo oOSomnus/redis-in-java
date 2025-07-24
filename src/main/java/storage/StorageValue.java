@@ -29,17 +29,6 @@ public class StorageValue {
         return exp;
     }
 
-//    public Integer setSingleElementList(String element){
-//        if(this.storageValueType == StorageValueType.LIST && this.listVal != null){
-//            this.listVal.add(element);
-//        }else{
-//            this.storageValueType = StorageValueType.LIST;
-//            this.listVal = new ArrayList<>();
-//            this.listVal.add(element);
-//        }
-//        return this.listVal.size();
-//    }
-
     public Integer pushElementsToList(List<String> elements){
         if(this.storageValueType == StorageValueType.LIST && this.listVal != null){
             this.listVal.addAll(elements);
@@ -61,6 +50,17 @@ public class StorageValue {
             this.listVal.addAll(0, reversedElements);
         }
         return this.listVal.size();
+    }
+
+    /**
+     * left pop from list
+     * @return leftmost element, or null when not list or empty
+     */
+    public String lPopElementFromList(){
+        if(this.storageValueType == StorageValueType.LIST && this.listVal != null){
+            return this.listVal.removeFirst();
+        }
+        return null;
     }
 
     /**
