@@ -8,7 +8,7 @@ import utils.StringUtils;
 
 import java.util.List;
 
-public class RPushHandler implements RedisHandler {
+public class LPushHandler implements RedisHandler {
     @Override
     public String handle(List<String> arguments) {
         String k = arguments.getFirst();
@@ -21,11 +21,11 @@ public class RPushHandler implements RedisHandler {
         }
         if(currSv == null){
             StorageValue finalSv = new StorageValue();
-            Integer size = finalSv.pushElementsToList(listElements);
+            Integer size = finalSv.lPushElementsToList(listElements);
             storage.set(k, finalSv);
             return StringUtils.toRESPInteger(size);
         }
-            Integer size = currSv.pushElementsToList(listElements);
-            return StringUtils.toRESPInteger(size);
+        Integer size = currSv.lPushElementsToList(listElements);
+        return StringUtils.toRESPInteger(size);
     }
 }

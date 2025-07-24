@@ -29,24 +29,36 @@ public class StorageValue {
         return exp;
     }
 
-    public Integer setSingleElementList(String element){
+//    public Integer setSingleElementList(String element){
+//        if(this.storageValueType == StorageValueType.LIST && this.listVal != null){
+//            this.listVal.add(element);
+//        }else{
+//            this.storageValueType = StorageValueType.LIST;
+//            this.listVal = new ArrayList<>();
+//            this.listVal.add(element);
+//        }
+//        return this.listVal.size();
+//    }
+
+    public Integer pushElementsToList(List<String> elements){
         if(this.storageValueType == StorageValueType.LIST && this.listVal != null){
-            this.listVal.add(element);
+            this.listVal.addAll(elements);
         }else{
             this.storageValueType = StorageValueType.LIST;
             this.listVal = new ArrayList<>();
-            this.listVal.add(element);
+            this.listVal.addAll(elements);
         }
         return this.listVal.size();
     }
 
-    public Integer setMultipleELementList(List<String> elements){
+    public Integer lPushElementsToList(List<String> elements){
+        List<String> reversedElements = elements.reversed();
         if(this.storageValueType == StorageValueType.LIST && this.listVal != null){
-            this.listVal.addAll(elements);
+            this.listVal.addAll(0, reversedElements);
         }else{
             this.storageValueType = StorageValueType.LIST;
             this.listVal = new ArrayList<>();
-            this.listVal.addAll(elements);
+            this.listVal.addAll(0, reversedElements);
         }
         return this.listVal.size();
     }

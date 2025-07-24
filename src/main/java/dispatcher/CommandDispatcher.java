@@ -1,6 +1,7 @@
 package dispatcher;
 
 import handlers.*;
+import handlers.listHandlers.LPushHandler;
 import handlers.listHandlers.LRangeHandler;
 import handlers.listHandlers.RPushHandler;
 
@@ -19,6 +20,7 @@ public class CommandDispatcher {
         initMapping.put("ping", new PingHandler());
         initMapping.put("rpush", new RPushHandler());
         initMapping.put("lrange", new LRangeHandler());
+        initMapping.put("lpush", new LPushHandler());
         handlerMapping = initMapping;
     }
 
