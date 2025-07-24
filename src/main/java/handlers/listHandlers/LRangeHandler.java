@@ -21,16 +21,29 @@ public class LRangeHandler implements RedisHandler {
         int end = Integer.parseInt(arguments.get(2));
         KVStorage storage = KVStorage.getInstance();
         StorageValue sv = storage.get(key);
-        if(start > end || sv == null || sv.getStorageValueType() != StorageValueType.LIST){
+        if(sv == null || sv.getStorageValueType() != StorageValueType.LIST){
             return StringUtils.toRESPList(new ArrayList<>());
         }
         List<String> currList = sv.getListValue();
-        if(currList == null || start >= currList.size()){
+        if(currList == null){
+            return StringUtils.toRESPList(new ArrayList<>());
+        }
+        start = transferNegativeIndex(start,currList.size());
+        end = transferNegativeIndex(end,currList.size());
+        if(start > end || start >= currList.size()){
             return StringUtils.toRESPList(new ArrayList<>());
         }
         if(end >= currList.size()){
             end = currList.size()-1;
         }
         return StringUtils.toRESPList(currList.subList(start, end+1));
+    }
+
+    private int transferNegativeIndex(int index, int size){
+        if(index >= 0) {
+            return index;
+        }
+        int pos = index+size;
+        return Math.max(pos, 0);
     }
 }
