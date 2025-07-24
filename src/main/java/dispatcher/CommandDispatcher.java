@@ -1,6 +1,7 @@
 package dispatcher;
 
 import handlers.*;
+import handlers.listHandlers.LRangeHandler;
 import handlers.listHandlers.RPushHandler;
 
 import java.util.HashMap;
@@ -17,6 +18,7 @@ public class CommandDispatcher {
         initMapping.put("set", new SetHandler());
         initMapping.put("ping", new PingHandler());
         initMapping.put("rpush", new RPushHandler());
+        initMapping.put("lrange", new LRangeHandler());
         handlerMapping = initMapping;
     }
 

@@ -51,4 +51,15 @@ public class StorageValue {
         return this.listVal.size();
     }
 
+    /**
+     * get list value
+     * @return list value | null when type is not list or list isn't initialized
+     */
+    public List<String> getListValue(){
+        if(this.storageValueType == StorageValueType.LIST && this.listVal != null) {
+            return this.listVal;
+        }
+        return null;
+    }
+
 }

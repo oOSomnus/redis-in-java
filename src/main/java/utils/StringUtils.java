@@ -1,5 +1,7 @@
 package utils;
 
+import java.util.List;
+
 public class StringUtils {
     public static String toSimpleString(String input) {
         return "+" + input + "\r\n";
@@ -11,6 +13,14 @@ public class StringUtils {
             return "$-1\r\n";
         }
         return "$" + input.length() + "\r\n" + input + "\r\n";
+    }
+
+    public static String toRESPList(List<String> input){
+        String output = "*"+input.size()+"\r\n";
+        for(String s : input){
+            output = output + toRESPBulkString(s);
+        }
+        return output;
     }
 
     public static String toRESPInteger(Integer input) {
