@@ -1,37 +1,47 @@
 package storage;
 
 import handlers.listHandlers.dataStructures.BlockingListQueue;
+import handlers.listHandlers.dataStructures.RedisStream;
+import storage.typeCheckAspect.StorageOperation;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author yihangz
  */
 public class StorageValue {
-    private final BlockingListQueue listVal;
     private final StorageValueType storageValueType;
+    private final BlockingListQueue listVal;
+    private final RedisStream streamVal;
     private String stringVal;
     private Instant exp; // null for unexp data
 
     public StorageValue(StorageValueType sv) {
         this.listVal = new BlockingListQueue();
+        this.streamVal = new RedisStream();
         this.storageValueType = sv;
     }
 
+    //--------------- type operation ----------------//
     public StorageValueType getStorageValueType() {
         return storageValueType;
     }
 
+    //--------------- string operation ----------------//
+    @StorageOperation(StorageValueType.STRING)
     public String getStringValue() {
         return stringVal;
     }
 
+    @StorageOperation(StorageValueType.STRING)
     public void setStringValue(String value) {
         this.stringVal = value;
         this.exp = null;
     }
 
+    //--------------- expiry operation ----------------//
     public Instant getExpiry() {
         return exp;
     }
@@ -40,21 +50,16 @@ public class StorageValue {
         this.exp = exp;
     }
 
+    //--------------- list operation ----------------//
+    @StorageOperation(StorageValueType.LIST)
     public Integer pushElementsToList(List<String> elements) {
-        if (this.storageValueType == StorageValueType.LIST) {
-            return this.listVal.addAll(elements);
-        } else {
-            return null;
-        }
+        return this.listVal.addAll(elements);
     }
 
+    @StorageOperation(StorageValueType.LIST)
     public Integer lPushElementsToList(List<String> elements) {
-        if (this.storageValueType == StorageValueType.LIST) {
-            List<String> reversedElements = elements.reversed();
-            return this.listVal.addAll(0, reversedElements);
-        } else {
-            return null;
-        }
+        List<String> reversedElements = elements.reversed();
+        return this.listVal.addAll(0, reversedElements);
     }
 
     /**
@@ -62,12 +67,9 @@ public class StorageValue {
      *
      * @return leftmost element, or null when not list or empty
      */
+    @StorageOperation(StorageValueType.LIST)
     public String lPopElementFromList() {
-        if (this.storageValueType == StorageValueType.LIST) {
-            return this.listVal.lPop();
-        } else {
-            return null;
-        }
+        return this.listVal.lPop();
     }
 
     /**
@@ -75,18 +77,21 @@ public class StorageValue {
      *
      * @return list value | null when type is not list or list isn't initialized
      */
+    @StorageOperation(StorageValueType.LIST)
     public List<String> getListValue() {
-        if (this.storageValueType == StorageValueType.LIST) {
-            return this.listVal.getList();
-        }
-        return null;
+        return this.listVal.getList();
     }
 
+    @StorageOperation(StorageValueType.LIST)
     public String bLPopElement(long timeout) {
         System.out.println("bLPopElement...");
-        if (this.storageValueType != StorageValueType.LIST) {
-            return null;
-        }
         return this.listVal.bLPop(timeout);
+    }
+
+    //--------------- stream operation ----------------//
+    @StorageOperation(StorageValueType.STREAM)
+    public String putStream(String key, String id, Map<String, String> vals) {
+        this.streamVal.put(id, vals);
+        return id;
     }
 }

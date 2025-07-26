@@ -24,16 +24,8 @@ public class BLPopHandler implements RedisHandler {
         long time2wait = Math.round(Double.parseDouble(arguments.get(1)) * Math.pow(10, 9));
         String key = arguments.get(0);
         KVStorage storage = KVStorage.getInstance();
-        StorageValue sv;
         lock.lock();
-        sv = storage.get(key);
-        if (sv == null) {
-            boolean success = storage.initialize(key, StorageValueType.LIST);
-            if (!success) {
-                return null;
-            }
-            sv = storage.get(key);
-        }
+        StorageValue sv = storage.getWithExpectedType(key, StorageValueType.LIST);
         lock.unlock();
         String result = sv.bLPopElement(time2wait);
         System.out.println("BLPopHandler|result=" + result);

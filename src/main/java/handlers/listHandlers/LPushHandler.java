@@ -24,14 +24,9 @@ public class LPushHandler implements RedisHandler {
             System.out.println("Type is not a list");
             return null;
         }
+        currSv = storage.getWithExpectedType(k, StorageValueType.LIST);
         if (currSv == null) {
-            boolean success = storage.initialize(k, StorageValueType.LIST);
-            if (!success) {
-                return StringUtils.toRESPBulkString(null);
-            }
-            currSv = storage.get(k);
-            Integer size = currSv.lPushElementsToList(listElements);
-            return StringUtils.toRESPInteger(size);
+            return StringUtils.toRESPBulkString(null);
         }
         Integer size = currSv.lPushElementsToList(listElements);
         return StringUtils.toRESPInteger(size);

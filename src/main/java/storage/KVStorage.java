@@ -47,4 +47,21 @@ public class KVStorage {
         return storageValue;
 
     }
+
+    /**
+     * get key, if not exists, create; if type incorrect, get null
+     *
+     * @param key key
+     * @param svt expected type
+     * @return null | sv
+     */
+    public synchronized StorageValue getWithExpectedType(String key, StorageValueType svt) {
+        if (this.get(key) == null) {
+            boolean success = this.initialize(key, svt);
+            if (!success) {
+                return null;
+            }
+        }
+        return this.get(key);
+    }
 }
