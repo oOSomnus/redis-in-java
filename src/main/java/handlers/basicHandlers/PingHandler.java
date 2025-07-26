@@ -1,6 +1,7 @@
-package handlers;
+package handlers.basicHandlers;
 
 import dispatcher.Registry.HandlerName;
+import handlers.RedisHandler;
 import utils.StringUtils;
 
 import java.util.List;

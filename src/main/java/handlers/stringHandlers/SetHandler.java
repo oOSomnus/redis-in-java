@@ -1,6 +1,7 @@
-package handlers;
+package handlers.stringHandlers;
 
 import dispatcher.Registry.HandlerName;
+import handlers.RedisHandler;
 import storage.KVStorage;
 import storage.StorageValue;
 import storage.StorageValueType;

@@ -1,6 +1,7 @@
-package handlers;
+package handlers.stringHandlers;
 
 import dispatcher.Registry.HandlerName;
+import handlers.RedisHandler;
 import storage.KVStorage;
 import storage.StorageValue;
 import utils.StringUtils;
@@ -16,10 +17,10 @@ public class GetHandler implements RedisHandler {
     public String handle(List<String> arguments) {
         KVStorage instance = KVStorage.getInstance();
         StorageValue sv = instance.get(arguments.getFirst());
-        if(sv == null){
+        if (sv == null) {
             return StringUtils.toRESPBulkString(null);
         }
-        System.out.println("handle get: s="+ sv.getStringValue());
+        System.out.println("handle get: s=" + sv.getStringValue());
         return StringUtils.toRESPBulkString(sv.getStringValue());
     }
 }
