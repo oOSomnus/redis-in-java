@@ -25,7 +25,6 @@ public class CommandDispatcher {
         HandlerRegistry reg = new HandlerRegistry();
         reg.scanAndRegister("handlers");
         Map<String,Object> objectMap = reg.getHandlerMap();
-        System.out.println("objectMap:"+objectMap);
         for(Map.Entry<String,Object> entry : objectMap.entrySet()){
             String key = entry.getKey();
             RedisHandler value = (RedisHandler)entry.getValue();

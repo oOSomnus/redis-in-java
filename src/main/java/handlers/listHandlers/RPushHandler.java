@@ -8,6 +8,7 @@ import storage.StorageValueType;
 import utils.StringUtils;
 
 import java.util.List;
+
 /**
  * @author yihangz
  */
@@ -19,17 +20,17 @@ public class RPushHandler implements RedisHandler {
         List<String> listElements = arguments.subList(1, arguments.size());
         KVStorage storage = KVStorage.getInstance();
         StorageValue currSv = storage.get(k);
-        if(currSv != null && currSv.getStorageValueType() != StorageValueType.LIST){
+        if (currSv != null && currSv.getStorageValueType() != StorageValueType.LIST) {
             System.out.println("Type is not a list");
             return null;
         }
-        if(currSv == null){
-            StorageValue finalSv = new StorageValue();
+        if (currSv == null) {
+            StorageValue finalSv = new StorageValue(StorageValueType.LIST);
             Integer size = finalSv.pushElementsToList(listElements);
             storage.set(k, finalSv);
             return StringUtils.toRESPInteger(size);
         }
-            Integer size = currSv.pushElementsToList(listElements);
-            return StringUtils.toRESPInteger(size);
+        Integer size = currSv.pushElementsToList(listElements);
+        return StringUtils.toRESPInteger(size);
     }
 }

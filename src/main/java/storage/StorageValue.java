@@ -1,80 +1,92 @@
 package storage;
 
+import handlers.listHandlers.dataStructures.BlockingListQueue;
+
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author yihangz
  */
 public class StorageValue {
+    private final BlockingListQueue listVal;
+    private final StorageValueType storageValueType;
     private String stringVal;
-    private List<String> listVal;
-    private Instant exp; //null for unexp data
-    private StorageValueType storageValueType;
+    private Instant exp; // null for unexp data
+
+    public StorageValue(StorageValueType sv) {
+        this.listVal = new BlockingListQueue();
+        this.storageValueType = sv;
+    }
+
     public StorageValueType getStorageValueType() {
         return storageValueType;
     }
-    public void setStringValue(String value) {
-        this.stringVal = value;
-        this.exp = null;
-        this.storageValueType = StorageValueType.STRING;
-    }
+
     public String getStringValue() {
         return stringVal;
     }
 
-    public void setExpiry(Instant exp) {
-        this.exp = exp;
+    public void setStringValue(String value) {
+        this.stringVal = value;
+        this.exp = null;
     }
 
     public Instant getExpiry() {
         return exp;
     }
 
-    public Integer pushElementsToList(List<String> elements){
-        if(this.storageValueType == StorageValueType.LIST && this.listVal != null){
-            this.listVal.addAll(elements);
-        }else{
-            this.storageValueType = StorageValueType.LIST;
-            this.listVal = new ArrayList<>();
-            this.listVal.addAll(elements);
-        }
-        return this.listVal.size();
+    public void setExpiry(Instant exp) {
+        this.exp = exp;
     }
 
-    public Integer lPushElementsToList(List<String> elements){
-        List<String> reversedElements = elements.reversed();
-        if(this.storageValueType == StorageValueType.LIST && this.listVal != null){
-            this.listVal.addAll(0, reversedElements);
-        }else{
-            this.storageValueType = StorageValueType.LIST;
-            this.listVal = new ArrayList<>();
-            this.listVal.addAll(0, reversedElements);
+    public Integer pushElementsToList(List<String> elements) {
+        if (this.storageValueType == StorageValueType.LIST) {
+            return this.listVal.addAll(elements);
+        } else {
+            return null;
         }
-        return this.listVal.size();
+    }
+
+    public Integer lPushElementsToList(List<String> elements) {
+        if (this.storageValueType == StorageValueType.LIST) {
+            List<String> reversedElements = elements.reversed();
+            return this.listVal.addAll(0, reversedElements);
+        } else {
+            return null;
+        }
     }
 
     /**
      * left pop from list
+     *
      * @return leftmost element, or null when not list or empty
      */
-    public String lPopElementFromList(){
-        if(this.storageValueType == StorageValueType.LIST && this.listVal != null){
-            return this.listVal.removeFirst();
+    public String lPopElementFromList() {
+        if (this.storageValueType == StorageValueType.LIST) {
+            return this.listVal.lPop();
+        } else {
+            return null;
         }
-        return null;
     }
 
     /**
      * get list value
+     *
      * @return list value | null when type is not list or list isn't initialized
      */
-    public List<String> getListValue(){
-        if(this.storageValueType == StorageValueType.LIST && this.listVal != null) {
-            return this.listVal;
+    public List<String> getListValue() {
+        if (this.storageValueType == StorageValueType.LIST) {
+            return this.listVal.getList();
         }
         return null;
     }
 
+    public String bLPopElement(int timeout) {
+        System.out.println("bLPopElement...");
+        if (this.storageValueType != StorageValueType.LIST) {
+            return null;
+        }
+        return this.listVal.bLPop(timeout);
+    }
 }
