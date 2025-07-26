@@ -82,7 +82,7 @@ public class StorageValue {
         return null;
     }
 
-    public String bLPopElement(int timeout) {
+    public String bLPopElement(long timeout) {
         System.out.println("bLPopElement...");
         if (this.storageValueType != StorageValueType.LIST) {
             return null;

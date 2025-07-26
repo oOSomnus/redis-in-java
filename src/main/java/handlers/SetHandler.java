@@ -19,14 +19,25 @@ public class SetHandler implements RedisHandler {
     public String handle(List<String> arguments) {
         String k = arguments.get(0);
         String v = arguments.get(1);
-        StorageValue storageValue = new StorageValue(StorageValueType.STRING);
-        storageValue.setStringValue(v);
+
+        KVStorage storage = KVStorage.getInstance();
+        if (storage.get(k) != null && storage.get(k).getStorageValueType() == StorageValueType.LIST) {
+            return StringUtils.toRESPBulkString(null);
+        }
+        StorageValue sv = storage.get(k);
+        if (sv == null) {
+            boolean success = storage.initialize(k, StorageValueType.STRING);
+            if (!success) {
+                return StringUtils.toRESPBulkString(null);
+            }
+        }
+        sv = storage.get(k);
+        sv.setStringValue(v);
         if (arguments.size() > 2 && arguments.get(2).equalsIgnoreCase("px")) {
             int time2Live = Integer.parseInt(arguments.get(3));
             System.out.println("time to live: " + time2Live);
-            storageValue.setExpiry(Instant.now().plus(time2Live, ChronoUnit.MILLIS));
+            sv.setExpiry(Instant.now().plus(time2Live, ChronoUnit.MILLIS));
         }
-        KVStorage.getInstance().set(k, storageValue);
         return StringUtils.toRESPBulkString("OK");
     }
 }

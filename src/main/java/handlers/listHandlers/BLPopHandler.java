@@ -21,15 +21,18 @@ public class BLPopHandler implements RedisHandler {
             System.out.println("BLPopHandler|Invalid number of arguments");
             return null;
         }
-        int time2wait = Integer.parseInt(arguments.get(1));
+        long time2wait = Math.round(Double.parseDouble(arguments.get(1)) * Math.pow(10, 9));
         String key = arguments.get(0);
         KVStorage storage = KVStorage.getInstance();
         StorageValue sv;
         lock.lock();
         sv = storage.get(key);
         if (sv == null) {
-            sv = new StorageValue(StorageValueType.LIST);
-            storage.set(key, sv);
+            boolean success = storage.initialize(key, StorageValueType.LIST);
+            if (!success) {
+                return null;
+            }
+            sv = storage.get(key);
         }
         lock.unlock();
         String result = sv.bLPopElement(time2wait);

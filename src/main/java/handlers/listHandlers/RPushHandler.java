@@ -25,9 +25,12 @@ public class RPushHandler implements RedisHandler {
             return null;
         }
         if (currSv == null) {
-            StorageValue finalSv = new StorageValue(StorageValueType.LIST);
-            Integer size = finalSv.pushElementsToList(listElements);
-            storage.set(k, finalSv);
+            boolean success = storage.initialize(k, StorageValueType.LIST);
+            if (!success) {
+                return StringUtils.toRESPBulkString(null);
+            }
+            currSv = storage.get(k);
+            Integer size = currSv.pushElementsToList(listElements);
             return StringUtils.toRESPInteger(size);
         }
         Integer size = currSv.pushElementsToList(listElements);

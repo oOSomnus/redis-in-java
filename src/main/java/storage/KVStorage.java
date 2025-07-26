@@ -1,15 +1,15 @@
 package storage;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author yihangz
  */
 public class KVStorage {
     private static final KVStorage instance = new KVStorage();
-    private final Map<String, StorageValue> kvStore = new ConcurrentHashMap<>();
+    private final Map<String, StorageValue> kvStore = new HashMap<>();
 
     private KVStorage() {
     }
@@ -18,8 +18,14 @@ public class KVStorage {
         return instance;
     }
 
-    public StorageValue set(String key, StorageValue sv) {
-        return kvStore.put(key, sv);
+    public synchronized boolean initialize(String key, StorageValueType svt) {
+        if (instance.get(key) != null && instance.get(key).getStorageValueType() != svt) {
+            return false;
+        }
+        if (instance.get(key) == null) {
+            kvStore.put(key, new StorageValue(svt));
+        }
+        return true;
     }
 
     /**
@@ -28,7 +34,7 @@ public class KVStorage {
      * @param key
      * @return value
      */
-    public StorageValue get(String key) {
+    public synchronized StorageValue get(String key) {
         System.out.println("getting key: " + key);
         StorageValue storageValue = kvStore.get(key);
         if (storageValue == null) {

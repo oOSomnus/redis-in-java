@@ -1,5 +1,6 @@
 package handlers.listHandlers.dataStructures;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,8 +20,11 @@ public class BlockingListQueue {
         list = new LinkedList<>();
     }
 
-    public String bLPop(int timeout) {
+    public String bLPop(long timeout) {
         try {
+            int nano = Instant.now().getNano();
+            long terminalTime = timeout + nano;
+            System.out.println("currentNano: " + nano + " terminalTime: " + terminalTime);
             if (bLPopGetLock(timeout)) {
                 System.out.println("bLPop| got the blocking lock");
                 String val = null;
@@ -37,8 +41,21 @@ public class BlockingListQueue {
                     } else {
                         System.out.println("bLPop| list is empty, waiting...");
                         notifyLock.lock();
-                        condition.await();
+                        long remain = Long.MAX_VALUE;
+                        if (timeout == 0) {
+                            System.out.println("bLPop| infinite waiting...");
+                            condition.await();
+                        } else {
+                            System.out.println("bLPop| finite waiting...");
+                            remain = condition.awaitNanos(terminalTime - Instant.now().getNano());
+                            System.out.println("bLPop| remain: " + remain);
+                        }
                         notifyLock.unlock();
+                        if (timeout != 0 && remain <= 0) {
+                            System.out.println("bLPop| terminal time reached");
+                            blockingLock.unlock();
+                            return null;
+                        }
                         System.out.println("bLPop| return from wait");
                     }
                 }
@@ -54,13 +71,13 @@ public class BlockingListQueue {
         }
     }
 
-    private boolean bLPopGetLock(int timeout) {
+    private boolean bLPopGetLock(long timeout) {
         if (timeout == 0) {
             blockingLock.lock();
             return true;
         } else {
             try {
-                return blockingLock.tryLock(timeout, TimeUnit.SECONDS);
+                return blockingLock.tryLock(timeout, TimeUnit.NANOSECONDS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -69,10 +86,13 @@ public class BlockingListQueue {
     }
 
     public Integer addAll(List<String> elements) {
+        System.out.println("addAll| getting lock...");
         listLock.lock();
         list.addAll(elements);
+        System.out.println("addAll| add completed");
         int currSize = list.size();
         listLock.unlock();
+        System.out.println("addAll| lock released");
         notifyBlockingThread();
         return currSize;
     }
@@ -107,6 +127,7 @@ public class BlockingListQueue {
     private void notifyBlockingThread() {
         notifyLock.lock();
         condition.signal();
+        System.out.println("notifyBlockingThread| notified");
         notifyLock.unlock();
     }
 
