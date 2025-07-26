@@ -12,7 +12,8 @@ public class BlockingListQueue {
     private final List<String> list;
     private final Lock listLock = new ReentrantLock();
     private final Lock blockingLock = new ReentrantLock(true);
-    private final Condition condition = blockingLock.newCondition();
+    private final Lock notifyLock = new ReentrantLock();
+    private final Condition condition = notifyLock.newCondition();
 
     public BlockingListQueue() {
         list = new LinkedList<>();
@@ -35,7 +36,9 @@ public class BlockingListQueue {
                         listLock.unlock();
                     } else {
                         System.out.println("bLPop| list is empty, waiting...");
+                        notifyLock.lock();
                         condition.await();
+                        notifyLock.unlock();
                         System.out.println("bLPop| return from wait");
                     }
                 }
@@ -102,9 +105,9 @@ public class BlockingListQueue {
     }
 
     private void notifyBlockingThread() {
-        blockingLock.lock();
+        notifyLock.lock();
         condition.signal();
-        blockingLock.unlock();
+        notifyLock.unlock();
     }
 
 }
