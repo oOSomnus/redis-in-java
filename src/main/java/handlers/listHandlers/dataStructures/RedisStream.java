@@ -1,5 +1,9 @@
 package handlers.listHandlers.dataStructures;
 
+import utils.errors.RedisError;
+import utils.errors.RedisErrorConstants;
+import utils.errors.RedisResult;
+
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -13,13 +17,26 @@ public class RedisStream {
 
     /* =================== Redis Stream Methods =================== */
 
-    private synchronized boolean verifyId(String id) {
+    /**
+     * verify id
+     *
+     * @param id
+     * @return result
+     */
+    private synchronized RedisResult verifyId(String id) {
         try {
             StreamId inputId = new StreamId(id);
+            if (inputId.compareTo(new StreamId("0-0")) <= 0) {
+                return RedisResult.err(RedisError.getRedisError(RedisErrorConstants.STREAM_ID_EMPTY_ERROR));
+            }
             StreamId largestId = getLargestId();
-            return inputId.compareTo(largestId) > 0;
+            if (inputId.compareTo(largestId) > 0) {
+                return RedisResult.ok(null);
+            }
+            return RedisResult.err(RedisError.getRedisError(RedisErrorConstants.STREAM_ID_ERROR));
+
         } catch (IllegalArgumentException e) {
-            return false;
+            return RedisResult.err(RedisError.getRedisError("Invalid Argument"));
         }
     }
 
@@ -38,12 +55,13 @@ public class RedisStream {
      * @param value
      * @return success
      */
-    public synchronized boolean put(String id, Map<String, String> value) {
-        if (!verifyId(id)) {
-            return false;
+    public synchronized RedisResult put(String id, Map<String, String> value) {
+        RedisResult result = verifyId(id);
+        if (!result.isOk()) {
+            return result;
         }
         map.put(new StreamId(id), value);
-        return true;
+        return RedisResult.ok(id);
     }
 
 
@@ -74,7 +92,11 @@ public class RedisStream {
             if (cmp != 0) return cmp;
             return Long.compare(this.seqs, id.seqs);
         }
-        
+
+        @Override
+        public String toString() {
+            return this.millis + "-" + this.seqs;
+        }
     }
 
 }

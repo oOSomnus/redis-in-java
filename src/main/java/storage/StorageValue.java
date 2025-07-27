@@ -3,8 +3,7 @@ package storage;
 import handlers.listHandlers.dataStructures.BlockingListQueue;
 import handlers.listHandlers.dataStructures.RedisStream;
 import storage.typeCheckAspect.StorageOperation;
-import utils.StringUtils;
-import utils.errors.ErrorEnum;
+import utils.errors.RedisResult;
 
 import java.time.Instant;
 import java.util.List;
@@ -91,11 +90,8 @@ public class StorageValue {
 
     //--------------- stream operation ----------------//
     @StorageOperation(StorageValueType.STREAM)
-    public String putStream(String id, Map<String, String> vals) {
-        boolean result = this.streamVal.put(id, vals);
-        if (!result) {
-            return StringUtils.toSimpleError(ErrorEnum.INVALID_STREAM_ID);
-        }
-        return id;
+    public RedisResult putStream(String id, Map<String, String> vals) {
+        RedisResult result = this.streamVal.put(id, vals);
+        return result;
     }
 }

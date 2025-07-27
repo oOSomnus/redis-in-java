@@ -54,8 +54,9 @@ public class BlockingListQueue {
      */
     public int addAll(List<String> elements) {
         elements.forEach(deque::addLast);
+        int size = permits.availablePermits() + elements.size();
         permits.release(elements.size());
-        return permits.availablePermits();
+        return size;
     }
 
     /**
@@ -66,8 +67,9 @@ public class BlockingListQueue {
      */
     public int addFrontAll(List<String> elements) {
         elements.forEach(deque::addFirst);
+        int size = permits.availablePermits() + elements.size();
         permits.release(elements.size());
-        return permits.availablePermits();
+        return size;
     }
 
     public int size() {

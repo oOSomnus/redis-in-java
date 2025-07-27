@@ -6,6 +6,7 @@ import storage.KVStorage;
 import storage.StorageValue;
 import storage.StorageValueType;
 import utils.StringUtils;
+import utils.errors.RedisResult;
 
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +31,10 @@ public class XAddHandler implements RedisHandler {
         if (sv == null) {
             return StringUtils.toRESPBulkString(null);
         }
-        String rid = sv.putStream(id, tmpMap);
-        return StringUtils.toRESPBulkString(rid);
+        RedisResult result = sv.putStream(id, tmpMap);
+        if (!result.isOk()) {
+            return StringUtils.toSimpleError(result.getError());
+        }
+        return StringUtils.toRESPBulkString(result.getValue());
     }
 }

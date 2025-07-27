@@ -1,6 +1,6 @@
 package utils;
 
-import utils.errors.ErrorEnum;
+import utils.errors.RedisError;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class StringUtils {
         return ":" + input.toString() + "\r\n";
     }
 
-    public static String toSimpleError(ErrorEnum error) {
-        return "-" + error.getValue() + "\r\n";
+    public static String toSimpleError(RedisError error) {
+        return "-" + error.getMessage() + "\r\n";
     }
 }
