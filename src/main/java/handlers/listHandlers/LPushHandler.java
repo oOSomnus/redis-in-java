@@ -19,12 +19,7 @@ public class LPushHandler implements RedisHandler {
         String k = arguments.getFirst();
         List<String> listElements = arguments.subList(1, arguments.size());
         KVStorage storage = KVStorage.getInstance();
-        StorageValue currSv = storage.get(k);
-        if (currSv != null && currSv.getStorageValueType() != StorageValueType.LIST) {
-            System.out.println("Type is not a list");
-            return null;
-        }
-        currSv = storage.getWithExpectedType(k, StorageValueType.LIST);
+        StorageValue currSv = storage.getWithExpectedType(k, StorageValueType.LIST);
         if (currSv == null) {
             return StringUtils.toRESPBulkString(null);
         }

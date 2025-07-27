@@ -26,8 +26,11 @@ public class BlockingListQueue {
     public String bLPop(long timeoutNanos) {
         try {
             if (timeoutNanos == 0) {
+                System.out.println("bLPop|trying to acquire permit...");
                 permits.acquire();
+                System.out.println("bLPop|permit acquired");
             } else if (!permits.tryAcquire(timeoutNanos, TimeUnit.NANOSECONDS)) {
+                System.out.println("bLPop|timeout;permit not acquired");
                 return null;
             }
             return deque.pollFirst();
