@@ -83,6 +83,9 @@ public class RedisStream {
      * @return
      */
     private synchronized String autoGenerateId(String id) {
+        if ("*".equals(id)) {
+            return autoGenerateFullId();
+        }
         Map.Entry<String, String> entry = separateByDash(id);
         String millis = entry.getKey();
         String seqs = entry.getValue();
@@ -120,6 +123,18 @@ public class RedisStream {
             }
         }
         return result;
+    }
+
+    private String autoGenerateFullId() {
+        Long currTime = System.currentTimeMillis();
+        StreamId leftId = new StreamId(currTime + "-0");
+        StreamId rightId = new StreamId((currTime + 1) + "-0");
+        SortedMap<StreamId, Map<String, String>> subMap = this.map.subMap(leftId, rightId);
+        if (subMap.isEmpty()) {
+            return currTime + "-0";
+        }
+        StreamId lastId = subMap.lastKey();
+        return currTime + "-" + (lastId.getSeqs() + 1);
     }
 
     /* =================== Stream Id =================== */
