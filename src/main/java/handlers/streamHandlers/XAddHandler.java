@@ -30,7 +30,7 @@ public class XAddHandler implements RedisHandler {
         if (sv == null) {
             return StringUtils.toRESPBulkString(null);
         }
-        String rid = sv.putStream(key, id, tmpMap);
+        String rid = sv.putStream(id, tmpMap);
         return StringUtils.toRESPBulkString(rid);
     }
 }

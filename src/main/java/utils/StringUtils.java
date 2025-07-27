@@ -1,5 +1,7 @@
 package utils;
 
+import utils.errors.ErrorEnum;
+
 import java.util.List;
 
 /**
@@ -11,22 +13,26 @@ public class StringUtils {
     }
 
     public static String toRESPBulkString(String input) {
-        if (input == null){
+        if (input == null) {
             System.out.println("return null bulk string");
             return "$-1\r\n";
         }
         return "$" + input.length() + "\r\n" + input + "\r\n";
     }
 
-    public static String toRESPList(List<String> input){
-        String output = "*"+input.size()+"\r\n";
-        for(String s : input){
+    public static String toRESPList(List<String> input) {
+        String output = "*" + input.size() + "\r\n";
+        for (String s : input) {
             output = output + toRESPBulkString(s);
         }
         return output;
     }
 
     public static String toRESPInteger(Integer input) {
-        return ":"+input.toString()+"\r\n";
+        return ":" + input.toString() + "\r\n";
+    }
+
+    public static String toSimpleError(ErrorEnum error) {
+        return "-" + error.getValue() + "\r\n";
     }
 }

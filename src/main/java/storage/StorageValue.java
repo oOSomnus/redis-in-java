@@ -3,6 +3,8 @@ package storage;
 import handlers.listHandlers.dataStructures.BlockingListQueue;
 import handlers.listHandlers.dataStructures.RedisStream;
 import storage.typeCheckAspect.StorageOperation;
+import utils.StringUtils;
+import utils.errors.ErrorEnum;
 
 import java.time.Instant;
 import java.util.List;
@@ -58,8 +60,7 @@ public class StorageValue {
 
     @StorageOperation(StorageValueType.LIST)
     public Integer lPushElementsToList(List<String> elements) {
-        List<String> reversedElements = elements.reversed();
-        return this.listVal.addAll(0, reversedElements);
+        return this.listVal.addFrontAll(elements);
     }
 
     /**
@@ -90,8 +91,11 @@ public class StorageValue {
 
     //--------------- stream operation ----------------//
     @StorageOperation(StorageValueType.STREAM)
-    public String putStream(String key, String id, Map<String, String> vals) {
-        this.streamVal.put(id, vals);
+    public String putStream(String id, Map<String, String> vals) {
+        boolean result = this.streamVal.put(id, vals);
+        if (!result) {
+            return StringUtils.toSimpleError(ErrorEnum.INVALID_STREAM_ID);
+        }
         return id;
     }
 }

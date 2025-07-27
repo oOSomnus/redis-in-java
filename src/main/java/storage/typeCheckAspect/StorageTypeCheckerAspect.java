@@ -8,9 +8,6 @@ import storage.StorageValue;
 
 import java.lang.reflect.Method;
 
-/**
- * 存储类型检查切面，用于拦截带StorageOperation注解的方法并进行类型校验
- */
 @Aspect
 public class StorageTypeCheckerAspect {
 
