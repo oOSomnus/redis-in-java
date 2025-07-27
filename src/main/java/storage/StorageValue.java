@@ -1,9 +1,9 @@
 package storage;
 
+import errors.RedisResult;
 import handlers.listHandlers.dataStructures.BlockingListQueue;
 import handlers.listHandlers.dataStructures.RedisStream;
 import storage.typeCheckAspect.StorageOperation;
-import utils.errors.RedisResult;
 
 import java.time.Instant;
 import java.util.List;

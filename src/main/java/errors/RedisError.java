@@ -1,4 +1,4 @@
-package utils.errors;
+package errors;
 
 public class RedisError extends Exception {
     private final String message;

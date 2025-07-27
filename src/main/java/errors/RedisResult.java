@@ -1,4 +1,4 @@
-package utils.errors;
+package errors;
 
 public class RedisResult {
     private final String value;

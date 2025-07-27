@@ -1,19 +1,20 @@
 import dispatcher.CommandDispatcher;
-import handlers.*;
 import parsers.BatchReader;
-import utils.BufferReaderUtil;
+import utils.ThreadPrefixedLogger;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
     public static void main(String[] args) {
         // You can use print statements as follows for debugging, they'll be visible when running tests.
         System.out.println("Logs from your program will appear here!");
-
         //  Uncomment this block to pass the first stage
         ServerSocket serverSocket = null;
         Socket clientSocket = null;
@@ -53,13 +54,16 @@ public class Main {
         public void run() {
             try (
                     InputStream inputStream = this.clientSocket.getInputStream();
-                    OutputStream outputStream = this.clientSocket.getOutputStream();
+                    OutputStream outputStream = this.clientSocket.getOutputStream()
             ) {
+                ThreadPrefixedLogger.init();
+                int randomNum = ThreadLocalRandom.current().nextInt(1, 1001);
+                ThreadPrefixedLogger.setPrefix(String.valueOf(randomNum));
                 BatchReader batchReader = new BatchReader(inputStream);
                 List<String> commandList;
                 while ((commandList = batchReader.readBatch()) != null) {
                     String retVal = CommandDispatcher.dispatch(commandList);
-                    if(retVal == null){
+                    if (retVal == null) {
                         continue;
                     }
                     outputStream.write(retVal.getBytes(StandardCharsets.UTF_8));

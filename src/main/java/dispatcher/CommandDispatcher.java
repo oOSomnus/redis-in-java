@@ -29,7 +29,9 @@ public class CommandDispatcher {
         }
         String command = commandList.getFirst().toLowerCase();
         if (HANDLER_MAPPING.containsKey(command)) {
-            return HANDLER_MAPPING.get(command).handle(commandList.subList(1, commandList.size()));
+            String result = HANDLER_MAPPING.get(command).handle(commandList.subList(1, commandList.size()));
+            System.out.println("result: " + result);
+            return result;
         } else {
             System.out.println("Unknown command: " + command);
             return null;

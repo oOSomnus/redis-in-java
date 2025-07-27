@@ -1,16 +1,22 @@
 package dispatcher.Registry;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class HandlerRegistry {
-    private Map<String, Object> handlerMap = new HashMap<>();
+    private final Map<String, Object> handlerMap = new HashMap<>();
 
-    // 扫描指定包下的所有类并注册
+    /**
+     * scan and register handlers automatically
+     *
+     * @param basePackage
+     */
     public void scanAndRegister(String basePackage) {
         try {
             String packagePath = basePackage.replace(".", "/");
@@ -22,19 +28,19 @@ public class HandlerRegistry {
                 String protocol = resource.getProtocol();
 
                 if ("file".equals(protocol)) {
-                    // 处理文件系统中的类
+                    // fs
                     scanDirectory(new File(resource.toURI()), basePackage);
                 } else if ("jar".equals(protocol)) {
-                    // 处理JAR文件中的类
+                    // jar
                     scanJarFile(resource, packagePath);
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // 扫描目录中的类文件
+    // fs
     private void scanDirectory(File directory, String packageName) throws Exception {
         if (!directory.exists()) {
             return;
@@ -55,8 +61,8 @@ public class HandlerRegistry {
         }
     }
 
-    // 扫描JAR文件中的类
-    private void scanJarFile(URL jarUrl, String packagePath) throws IOException, Exception {
+    // jar
+    private void scanJarFile(URL jarUrl, String packagePath) throws Exception {
         String jarFilepath = jarUrl.getFile().substring(5, jarUrl.getFile().indexOf("!"));
         try (JarFile jarFile = new JarFile(jarFilepath)) {
             Enumeration<JarEntry> entries = jarFile.entries();
@@ -73,7 +79,7 @@ public class HandlerRegistry {
         }
     }
 
-    // 注册单个类到map中
+    // register single class
     private void registerClass(String className) throws Exception {
         Class<?> clazz = Class.forName(className);
         HandlerName handlerName = clazz.getAnnotation(HandlerName.class);
@@ -84,8 +90,7 @@ public class HandlerRegistry {
             handlerMap.put(handlerName.value(), instance);
         }
     }
-
-    // 获取注册的处理器映射
+    
     public Map<String, Object> getHandlerMap() {
         return Collections.unmodifiableMap(handlerMap);
     }

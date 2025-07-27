@@ -1,6 +1,6 @@
 package utils;
 
-import utils.errors.RedisError;
+import errors.RedisError;
 
 import java.util.List;
 

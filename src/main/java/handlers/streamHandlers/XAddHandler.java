@@ -1,12 +1,12 @@
 package handlers.streamHandlers;
 
 import dispatcher.Registry.HandlerName;
+import errors.RedisResult;
 import handlers.RedisHandler;
 import storage.KVStorage;
 import storage.StorageValue;
 import storage.StorageValueType;
 import utils.StringUtils;
-import utils.errors.RedisResult;
 
 import java.util.HashMap;
 import java.util.List;
